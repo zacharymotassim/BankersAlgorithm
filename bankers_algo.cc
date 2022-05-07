@@ -184,9 +184,16 @@ bool DeadlockDetectionAlgorithm(std::vector<std::vector<int>>&alloc_,std::vector
     request_row++;
   }
   if(safe_sequence.size()<request.size())
-  {deadlock_is_present=true;}
-  PrintMatrix(available_matrix,"available");
+  {
+    deadlock_is_present=true;
+    std::cout<<"no safe sequence is present, execution reached deadlock at:";
+    PrintArray(safe_sequence);
+  }
+  else{
+  std::cout<<"no deadlock is present, the safe squence is: ";
   PrintArray(safe_sequence);
+}
+  PrintMatrix(available_matrix,"available");
   return deadlock_is_present;
 }
 // wrapper procedure
@@ -219,9 +226,7 @@ void ExecuteDeadlockDetectionAlgorithm()
   std::vector<std::vector<int>>request=FillUserInput();
   std::cout<<"Establish initial available resources:\n";
   std::vector<int>initally_available=AvailCol();
-  if(DeadlockDetectionAlgorithm(alloc_,request,initally_available))
-  {std::cout<<"system is in deadlock state\n";return;}
-  std::cout<<"no deadlock is present\n";
+  DeadlockDetectionAlgorithm(alloc_,request,initally_available);
 }
 int main()
 {
