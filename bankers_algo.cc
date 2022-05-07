@@ -157,9 +157,42 @@ std::vector<int>AvailCol()
   }
   return avail;
 }
+
+bool DeadlockDetectionAlgorithm(std::vector<std::vector<int>>&alloc_,std::vector<std::vector<int>>&request,std::vector<int>avail_)
+{
+  bool deadlock_is_present(false);
+  std::vector<std::vector<int>>available_matrix;//matrix to be returned
+  available_matrix.push_back(avail_);
+  std::set<size_t>seen;//holds index of already serviced processes
+  std::vector<size_t>safe_sequence;//store the safe sequence i.e the sequence of processes that can be executed without deadlock
+  size_t avail_row(0),request_row(0);
+  while(request_row<alloc_.size())
+  {
+    if(CanBeServed(available_matrix[avail_row],request[request_row]) && !seen.count(request_row))
+    {
+      std::vector<int>row;
+      for(size_t i(0);i<available_matrix[avail_row].size();++i)
+      {
+        row.push_back(available_matrix[avail_row][i]+alloc_[request_row][i]);
+      }
+        available_matrix.push_back(row);
+        seen.insert(request_row);
+        safe_sequence.push_back(request_row);
+        request_row=-1;
+        avail_row++;
+    }
+    request_row++;
+  }
+  if(safe_sequence.size()<request.size())
+  {deadlock_is_present=true;}
+  PrintMatrix(available_matrix,"available");
+  PrintArray(safe_sequence);
+  return deadlock_is_present;
+}
 // wrapper procedure
 void ExecuteBankers()
 {
+  std::cout<<"Executing bankers algorithm\n";
   std::cout<<"Build allocation matrix:\n";
   std::vector<std::vector<int>>alloc_=FillUserInput();
   std::cout<<"Build max matrix:\n";
@@ -176,8 +209,23 @@ void ExecuteBankers()
   PrintMatrix(available_matrix,"available");
   PrintMatrix(need_,"need");
 }
+
+void ExecuteDeadlockDetectionAlgorithm()
+{
+  std::cout<<"Executing the deadlock detection algorithm\n";
+  std::cout<<"Build allocation matrix:\n";
+  std::vector<std::vector<int>>alloc_=FillUserInput();
+  std::cout<<"Build request matrix:\n";
+  std::vector<std::vector<int>>request=FillUserInput();
+  std::cout<<"Establish initial available resources:\n";
+  std::vector<int>initally_available=AvailCol();
+  if(DeadlockDetectionAlgorithm(alloc_,request,initally_available))
+  {std::cout<<"system is in deadlock state\n";return;}
+  std::cout<<"no deadlock is present\n";
+}
 int main()
 {
   ExecuteBankers();
+  ExecuteDeadlockDetectionAlgorithm();
   return 0;
 }
