@@ -2,8 +2,9 @@
 #include<vector>
 #include<set>
 // Author: Zachary Motassim
+// Operating Systems Spring 2022
 // the following file contains procedures stimulating Bankers Algorithm in c++
-//procedutre to print a matrix
+//procedure to print a matrix
 void PrintMatrix(std::vector<std::vector<int>>&v,std::string catergory)
 {
   std::cout<<catergory<<'\n';
